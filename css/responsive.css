@@ -21,7 +21,7 @@
     width:100%;
     gap:8px 12px;
   }
-  .nav nav a{font-size:8px}
+  .nav nav a{font-size:10px}
   .scene-section{padding:110px 7vw;min-height:100svh}
   .hero{min-height:100svh;display:block;padding-top:150px}
   .hero-copy{max-width:100%}
@@ -51,13 +51,13 @@
 @media(max-width:600px){
   .nav{top:10px}
   .nav .brand{font-size:12px}
-  .sound{font-size:8px}
+  .sound{font-size:10px}
   .nav nav{gap:6px 10px}
-  .nav nav a{font-size:7px;letter-spacing:.12em}
+  .nav nav a{font-size:9px;letter-spacing:.1em}
   h1{font-size:18vw}
   .role{letter-spacing:.2em;font-size:13px}
   .lead{font-size:13px}
-  .hero-meta{font-size:7px}
+  .hero-meta{font-size:9px}
   .hero-meta{left:7vw;right:7vw;bottom:28px;gap:12px}
   .scroll-cue{right:7vw}
   .section-copy h2{font-size:18vw}
@@ -65,11 +65,11 @@
   .status-grid{grid-template-columns:1fr}
   .experience-card h3{font-size:34px}
   .exp-grid{grid-template-columns:1fr}
-  .skill-node{font-size:7px;padding:10px}
+  .skill-node{font-size:9px;padding:10px}
   .core{width:80px;height:80px;font-size:21px}
   .project-card h3{font-size:42px}
   .contact h2{font-size:19vw}
-  .contact-details{font-size:10px}
+  .contact-details{font-size:11px}
   .final-mark{font-size:80px}
   .education-grid{grid-template-columns:1fr}
   .education-entry:last-child{grid-column:auto}
@@ -85,7 +85,7 @@
   h1{font-size:17vw}
   .role{letter-spacing:.13em}
   .actions{gap:8px}
-  .btn{padding:12px 13px;font-size:8px}
+  .btn{padding:12px 13px;font-size:10px}
   .content-spotlight,.nav-spotlight{width:calc(100% - 24px);padding:28px 20px 24px}
   .skill-panel{width:calc(100% - 24px);padding:24px 22px}
   .project-card{padding:22px 18px}
