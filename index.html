@@ -1,0 +1,337 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1.0">
+  <meta name="description" content="Ebran Husain — NOC Engineer. A cinematic 3D professional portfolio.">
+  <meta name="theme-color" content="#040712">
+  <title>Ebran Husain | NOC Engineer</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/cinematic.css">
+  <link rel="stylesheet" href="css/responsive.css">
+  <script type="importmap">
+{
+  "imports": {
+    "three": "https://cdn.jsdelivr.net/npm/three@0.180.0/build/three.module.js",
+    "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.180.0/examples/jsm/"
+  }
+}
+</script>
+</head>
+<body>
+  <div id="webgl-fallback" class="fallback" hidden>
+    <div>
+      <span class="eyebrow">3D EXPERIENCE UNAVAILABLE</span>
+      <h2>Your browser does not support WebGL.</h2>
+      <p>The portfolio content is still available below.</p>
+    </div>
+  </div>
+
+  <div id="loader" class="loader">
+    <div class="loader-core">
+      <div class="loader-ring"></div>
+      <span id="loader-percent">00%</span>
+      <p id="loader-status">INITIALIZING SYSTEM</p>
+    </div>
+  </div>
+
+  <canvas id="webgl"></canvas>
+  <div class="grain"></div>
+  <div class="vignette"></div>
+  <div id="nav-spotlight" class="nav-spotlight" aria-hidden="true">
+    <button class="nav-spotlight-close" type="button" aria-label="Close content spotlight">×</button>
+    <span class="eyebrow"></span>
+    <h2></h2>
+    <p></p>
+    <div class="spotlight-tags"></div>
+  </div>
+
+  <header class="nav">
+    <a class="brand" href="#home" aria-label="Ebran Husain home">
+      <span class="brand-dot"></span>
+      <span>EH</span>
+    </a>
+    <nav aria-label="Primary navigation">
+      <a href="#home">HOME</a>
+      <a href="#experience">EXPERIENCE</a>
+      <a href="#skills">SKILLS</a>
+      <a href="#projects">PROJECTS</a>
+      <a href="#education">EDUCATION</a>
+      <a href="#contact">CONTACT</a>
+    </nav>
+  </header>
+
+  <main>
+    <section id="home" class="scene-section hero">
+      <div class="hero-copy reveal">
+        <span class="eyebrow">24/7 INFRASTRUCTURE OPERATIONS</span>
+        <h1>EBRAN<br><span>HUSAIN</span></h1>
+        <p class="role">NOC ENGINEER</p>
+        <p class="lead">Monitoring infrastructure. Responding to incidents. Helping keep critical systems available.</p>
+        <div class="actions">
+          <a class="btn primary" href="#experience">ENTER EXPERIENCE <span>↓</span></a>
+          <a class="btn" href="#projects">VIEW WORK <span>↗</span></a>
+        </div>
+      </div>
+      <div class="hero-portrait reveal" aria-label="Ebran Husain portrait">
+        <img src="ebran.JPG" alt="Ebran Husain portrait" />
+      </div>
+      <div class="hero-meta">
+        <span>BHARAIHAWA, RUPANDEHI</span>
+        <span>NEPAL</span>
+      </div>
+      <div class="scroll-cue"><span></span>SCROLL TO ENTER</div>
+    </section>
+
+    <section id="monitoring" class="scene-section monitoring">
+      <div class="section-copy reveal">
+        <span class="eyebrow">NOC ENVIRONMENT</span>
+        <h2>MONITOR.<br><em>DETECT.</em><br>RESPOND.</h2>
+        <p>A cinematic visualization of the workflow behind 24/7 infrastructure monitoring and incident response.</p>
+      </div>
+      <div class="status-wall" aria-label="Illustrative monitoring dashboard">
+        <div class="status-head"><span>INFRASTRUCTURE STATUS</span><span class="live"><i></i> LIVE</span></div>
+        <div class="status-grid">
+          <div><b>SERVER</b><strong>ONLINE</strong><small>99.98% health</small></div>
+          <div><b>NETWORK</b><strong>ONLINE</strong><small>Traffic stable</small></div>
+          <div><b>DATABASE</b><strong>ONLINE</strong><small>Latency normal</small></div>
+          <div class="alert-card"><b>INCIDENT</b><strong>HIGH</strong><small>Investigation required</small></div>
+        </div>
+        <div class="chart"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></div>
+      </div>
+    </section>
+
+    <section id="response" class="scene-section response">
+      <div class="section-copy reveal">
+        <span class="eyebrow">INCIDENT LIFECYCLE</span>
+        <h2>FROM ALERT<br>TO <em>RESOLUTION.</em></h2>
+        <p>Detection, analysis, troubleshooting, escalation, resolution and documentation — represented as one continuous operational flow.</p>
+      </div>
+      <div class="lifecycle">
+        <div class="life-line"></div>
+        <article><span>01</span><b>ALERT</b><small>Event detected</small></article>
+        <article><span>02</span><b>ANALYSIS</b><small>Investigate the signal</small></article>
+        <article><span>03</span><b>TROUBLESHOOT</b><small>L1 investigation</small></article>
+        <article><span>04</span><b>ESCALATE</b><small>SLA / severity based</small></article>
+        <article><span>05</span><b>RESOLVE</b><small>Services restored</small></article>
+      </div>
+    </section>
+
+    <section id="experience" class="scene-section experience">
+      <div class="section-copy reveal">
+        <span class="eyebrow">PROFESSIONAL JOURNEY</span>
+        <h2>THE<br><em>OPERATOR.</em></h2>
+        <p>Hands-on experience in a 24/7 NOC and data-center environment.</p>
+      </div>
+      <div class="experience-card reveal">
+        <div class="exp-year">2022 — CURRENT</div>
+        <h3>NOC Engineer</h3>
+        <h4>CAS Cloud Pvt. Ltd.</h4>
+        <div class="exp-grid">
+          <p>Monitor servers, network devices and infrastructure in a 24/7 NOC environment.</p>
+          <p>Build and configure Zabbix monitoring for Windows servers and Windows workstations.</p>
+          <p>Use Zabbix and Checkmk for real-time system health and performance monitoring.</p>
+          <p>Build and troubleshoot networking labs in Cisco Packet Tracer, including routing, switching and VLAN topologies.</p>
+          <p>Detect, troubleshoot and escalate incidents according to severity and SLA.</p>
+          <p>Manage incident lifecycle using the Motadata ticketing system.</p>
+          <p>Perform L1 troubleshooting for network, server and virtualization issues.</p>
+          <p>Coordinate with system, network and field teams for resolution.</p>
+          <p>Maintain incident logs, shift handover reports and documentation.</p>
+          <p>Support high availability of business-critical systems.</p>
+        </div>
+      </div>
+      <div id="experience-spotlight" class="content-spotlight" aria-hidden="true">
+        <button class="content-spotlight-close" type="button" aria-label="Close experience spotlight">×</button>
+        <span class="eyebrow">2022 — CURRENT / CAS CLOUD PVT. LTD.</span>
+        <h3>NOC ENGINEER</h3>
+        <p>24/7 infrastructure monitoring, incident response and L1 troubleshooting across servers, networks and virtualization environments. Built Zabbix monitoring for Windows servers and workstations, and practiced routing and switching labs in Cisco Packet Tracer.</p>
+        <div class="spotlight-tags"><span>ZABBIX</span><span>WINDOWS MONITORING</span><span>CISCO PACKET TRACER</span><span>CHECKMK</span><span>INCIDENT RESPONSE</span></div>
+      </div>
+    </section>
+
+    <section id="skills" class="scene-section skills">
+      <div class="section-copy reveal">
+        <span class="eyebrow">SKILL NETWORK</span>
+        <h2>THE<br><em>TOOLSET.</em></h2>
+        <p>Core capabilities across networking, NOC operations, monitoring, systems and development.</p>
+      </div>
+      <div class="skill-orbit">
+        <div class="orbit-ring ring-a"></div><div class="orbit-ring ring-b"></div>
+        <div class="core">EH<small>CORE</small></div>
+        <button class="skill-node n1" data-skill="NETWORKING">NETWORKING</button>
+        <button class="skill-node n2" data-skill="MONITORING">MONITORING</button>
+        <button class="skill-node n3" data-skill="SYSTEMS">SYSTEMS</button>
+        <button class="skill-node n4" data-skill="DEVELOPMENT">DEVELOPMENT</button>
+      </div>
+      <div id="skill-panel" class="skill-panel">
+        <button class="skill-panel-close" type="button" aria-label="Close skill spotlight">×</button>
+        <span class="eyebrow">SELECT A NODE</span>
+        <h3>Explore the toolkit</h3>
+        <p>Hover or tap a category to reveal the skills.</p>
+      </div>
+    </section>
+
+    <section id="projects" class="scene-section projects">
+      <div class="section-copy reveal">
+        <span class="eyebrow">BUILDING</span>
+        <h2>AFTER<br><em>HOURS.</em></h2>
+        <p>Selected development projects built with HTML, CSS, JavaScript, Node.js and MySQL.</p>
+      </div>
+      <div class="project-stage">
+        <article class="project-card project-one reveal">
+          <span class="project-number">01</span>
+          <div>
+            <span class="eyebrow">FULL-STACK WEB PROJECT</span>
+            <h3>Coffee Café</h3>
+            <p>Responsive café website with Node.js, MySQL, CRUD operations and form handling.</p>
+            <div class="tags"><span>HTML</span><span>CSS</span><span>JAVASCRIPT</span><span>NODE.JS</span><span>MYSQL</span></div>
+          </div>
+        </article>
+        <article class="project-card project-two reveal">
+          <span class="project-number">02</span>
+          <div>
+            <span class="eyebrow">API-DRIVEN WEB PROJECT</span>
+            <h3>Weather</h3>
+            <p>Responsive real-time weather application with API data and dynamic UI updates.</p>
+            <div class="tags"><span>HTML</span><span>CSS</span><span>JAVASCRIPT</span><span>NODE.JS</span><span>MYSQL</span></div>
+          </div>
+        </article>
+        <article class="project-card project-three reveal">
+          <span class="project-number">03</span>
+          <div>
+            <span class="eyebrow">CONVERSATIONAL WEB PROJECT</span>
+            <h3>Chatbox</h3>
+            <p>Interactive chatbox experience built for clear, responsive conversations and dynamic user interaction.</p>
+            <div class="tags"><span>HTML</span><span>CSS</span><span>JAVASCRIPT</span><span>NODE.JS</span><span>MYSQL</span></div>
+          </div>
+        </article>
+        <article class="project-card project-four reveal">
+          <span class="project-number">04</span>
+          <div>
+            <span class="eyebrow">WRITING ASSISTANT PROJECT</span>
+            <h3>AI Humanizer</h3>
+            <p>Writing tool that helps transform generated text into clearer, more natural human-style content.</p>
+            <div class="tags"><span>HTML</span><span>CSS</span><span>JAVASCRIPT</span><span>NODE.JS</span><span>MYSQL</span></div>
+          </div>
+        </article>
+        <article class="project-card project-five reveal">
+          <span class="project-number">05</span>
+          <div>
+            <span class="eyebrow">DOCUMENT UTILITY PROJECT</span>
+            <h3>Working PDF</h3>
+            <p>Practical PDF workflow tool for working with documents in a focused, simple interface.</p>
+            <div class="tags"><span>HTML</span><span>CSS</span><span>JAVASCRIPT</span><span>NODE.JS</span><span>MYSQL</span></div>
+          </div>
+        </article>
+        <article class="project-card project-six reveal">
+          <span class="project-number">06</span>
+          <div>
+            <span class="eyebrow">NETWORKING LAB PROJECT</span>
+            <h3>Packet Tracer Lab</h3>
+            <p>Hands-on Cisco Packet Tracer labs for designing and troubleshooting routing, switching and VLAN topologies.</p>
+            <div class="tags"><span>CISCO</span><span>PACKET TRACER</span><span>VLAN</span><span>OSPF</span><span>ROUTING</span></div>
+          </div>
+        </article>
+        <article class="project-card project-seven reveal">
+          <span class="project-number">07</span>
+          <div>
+            <span class="eyebrow">ENTERPRISE NETWORK DESIGN</span>
+            <h3>Multi-VLAN Network</h3>
+            <ul>
+              <li>Designed multi-VLAN enterprise networks with access ports and 802.1Q trunking.</li>
+              <li>Implemented inter-VLAN routing, STP/RSTP and EtherChannel.</li>
+              <li>Configured OSPF, EIGRP, DHCP, NAT/PAT and ACLs.</li>
+              <li>Configured wireless LANs with access points, SSIDs and secure client access.</li>
+              <li>Applied Layer 2 security and port security.</li>
+            </ul>
+            <div class="tags"><span>VLAN</span><span>TRUNKING</span><span>WIRELESS</span><span>OSPF</span><span>EIGRP</span></div>
+          </div>
+        </article>
+        <article class="project-card project-eight reveal">
+          <span class="project-number">08</span>
+          <div>
+            <span class="eyebrow">DYNAMIC ROUTING LAB</span>
+            <h3>Routing Convergence</h3>
+            <ul>
+              <li>Designed multi-router topologies in Cisco Packet Tracer.</li>
+              <li>Configured OSPF and EIGRP.</li>
+              <li>Verified neighbor relationships and routing tables.</li>
+              <li>Tested route selection and network convergence.</li>
+              <li>Troubleshot connectivity and routing issues.</li>
+            </ul>
+            <div class="tags"><span>OSPF</span><span>EIGRP</span><span>ROUTING TABLES</span><span>CONVERGENCE</span></div>
+          </div>
+        </article>
+        <article class="project-card project-nine reveal">
+          <span class="project-number">09</span>
+          <div>
+            <span class="eyebrow">NETWORK SECURITY &amp; SERVICES LAB</span>
+            <h3>Secure Network Services</h3>
+            <ul>
+              <li>Configured standard and extended ACLs.</li>
+              <li>Implemented NAT/PAT, DHCP and basic network services.</li>
+              <li>Applied switch security concepts.</li>
+              <li>Tested and troubleshot permitted and denied traffic.</li>
+              <li>Used Ping, Traceroute, ARP and routing-table analysis.</li>
+            </ul>
+            <div class="tags"><span>ACL</span><span>NAT/PAT</span><span>DHCP</span><span>SECURITY</span></div>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <section id="education" class="scene-section education">
+      <div class="education-card reveal">
+        <span class="eyebrow">EDUCATION QUALIFICATIONS</span>
+        <p class="education-intro">Academic background and educational achievements.</p>
+        <div class="education-grid">
+          <article class="education-entry">
+            <div class="edu-year">2021</div>
+            <h2>B.TECH</h2>
+            <h3>COMPUTER SCIENCE ENGINEERING</h3>
+            <p><strong>Maharishi Markandeshwar (Deemed To Be University) (MMDU)</strong><br>Mullana, Ambala, Haryana, India</p>
+            <p>Computer Science &amp; Engineering Department</p>
+            <div class="edu-result"><span>CGPA</span><strong>8.49</strong><small>Out of 10.0</small></div>
+          </article>
+          <article class="education-entry">
+            <div class="edu-year">2016</div>
+            <h2>NEB</h2>
+            <h3>HIGHER SECONDARY EDUCATION</h3>
+            <p><strong>Bhairahawa Secondary School</strong><br>Bhairahawa, Rupandehi, Nepal</p>
+            <p>Science Stream</p>
+            <div class="edu-result"><span>Percentage</span><strong>63.40%</strong><small>First Division</small></div>
+          </article>
+          <article class="education-entry">
+            <div class="edu-year">2014</div>
+            <h2>SLC</h2>
+            <h3>SECONDARY EDUCATION</h3>
+            <p><strong>Rupandehi Lilaram Neupane Higher Secondary School</strong><br>Bhairahawa, Rupandehi, Nepal</p>
+            <p>School Leaving Certificate Examination</p>
+            <div class="edu-result"><span>Percentage</span><strong>68%</strong><small>First Division</small></div>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section id="contact" class="scene-section contact">
+      <div class="contact-copy reveal">
+        <span class="eyebrow">CONNECTION</span>
+        <h2>LET'S<br><em>CONNECT.</em></h2>
+        <p>For opportunities, collaboration or a conversation about technology and infrastructure.</p>
+        <div class="contact-details">
+          <a href="mailto:ebranhusain777@gmail.com">ebranhusain777@gmail.com</a>
+          <a href="tel:+9779824479744">+977 9824479744</a>
+          <a href="https://www.linkedin.com/in/ebran-husain-339639265/" target="_blank" rel="noopener noreferrer">LinkedIn</a>
+          <span>Bhairahawa, Rupandehi · Nepal</span>
+        </div>
+      </div>
+      <div class="final-mark">EH</div>
+    </section>
+  </main>
+
+  <script type="module" src="js/main.js"></script>
+</body>
+</html>
