@@ -11,7 +11,6 @@
   .nav-container {
     padding: 10px 20px;
   }
-<<<<<<< HEAD
 
   .nav-links {
     display: none;
@@ -95,25 +94,22 @@
   .cv-banner-right {
     width: 100%;
   }
-
-  .cv-banner-right .btn {
-    width: 100%;
-=======
-  .nav nav a{font-size:10px}
-  .scene-section{padding:110px 7vw;min-height:100svh}
-  .hero{min-height:100svh;display:block;padding-top:150px}
-  .hero-copy{max-width:100%}
-  .hero-portrait{position:relative;top:auto;right:auto;width:min(300px,100%);height:min(420px,68vw);margin:65px 0 0 auto;transform:translateY(-40px);animation:portraitDropMobile 1.1s cubic-bezier(.2,.7,.2,1) forwards .25s}
-  @keyframes portraitDropMobile{
-    0% { opacity:0; transform:translateY(-60px) scale(0.96); }
-    60% { opacity:1; transform:translateY(8px) scale(1.02); }
-    100% { opacity:1; transform:translateY(0) scale(1); }
->>>>>>> 11c854245bca88b0bc5f351038b4ad95dbdbccfb
-  }
 }
-<<<<<<< HEAD
 
 @media (max-width: 768px) {
+  .nav-container {
+    padding: 10px 16px;
+  }
+
+  .brand-text {
+    min-width: 0;
+  }
+
+  .brand-name,
+  .brand-role {
+    white-space: nowrap;
+  }
+
   .section {
     padding: 60px 0;
   }
@@ -156,6 +152,19 @@
     flex-direction: column;
     text-align: center;
   }
+
+  .photo-lightbox {
+    padding: 16px;
+  }
+
+  .photo-lightbox-panel {
+    max-width: 100%;
+  }
+
+  .photo-lightbox-panel img {
+    max-width: 100%;
+    max-height: 82vh;
+  }
 }
 
 @media (max-width: 480px) {
@@ -164,7 +173,21 @@
   }
 
   .hero-title {
-    font-size: 30px;
+    font-size: clamp(28px, 9vw, 34px);
+  }
+
+  .hero-subtitle {
+    font-size: 16px;
+  }
+
+  .hero-bio,
+  .section-desc {
+    font-size: 14px;
+  }
+
+  .status-badge,
+  .meta-badge {
+    font-size: 12px;
   }
 
   .hero-actions {
@@ -183,6 +206,11 @@
     height: 300px;
   }
 
+  .photo-lightbox-close {
+    top: -10px;
+    right: -8px;
+  }
+
   .experience-card {
     padding: 22px 16px;
   }
@@ -191,55 +219,4 @@
     padding: 20px 16px;
   }
 
-  .cv-banner-card {
-    padding: 22px 18px;
-  }
-=======
-@media(max-width:600px){
-  .nav{top:10px}
-  .nav .brand{font-size:12px}
-  .sound{font-size:10px}
-  .nav nav{gap:6px 10px}
-  .nav nav a{font-size:9px;letter-spacing:.1em}
-  h1{font-size:18vw}
-  .role{letter-spacing:.2em;font-size:13px}
-  .lead{font-size:13px}
-  .hero-meta{font-size:9px}
-  .hero-meta{left:7vw;right:7vw;bottom:28px;gap:12px}
-  .scroll-cue{right:7vw}
-  .section-copy h2{font-size:18vw}
-  .section-copy h2,.contact h2,.project-card h3{overflow-wrap:anywhere}
-  .status-grid{grid-template-columns:1fr}
-  .experience-card h3{font-size:34px}
-  .exp-grid{grid-template-columns:1fr}
-  .skill-node{font-size:9px;padding:10px}
-  .core{width:80px;height:80px;font-size:21px}
-  .project-card h3{font-size:42px}
-  .contact h2{font-size:19vw}
-  .contact-details{font-size:11px}
-  .final-mark{font-size:80px}
-  .education-grid{grid-template-columns:1fr}
-  .education-entry:last-child{grid-column:auto}
-  .education-entry{padding:22px}
-}
-@media(max-width:420px){
-  .nav{width:calc(100% - 16px);padding:10px 8px;gap:8px}
-  .nav nav{gap:6px 8px}
-  .nav nav a{font-size:6px}
-  .scene-section{padding-left:6vw;padding-right:6vw}
-  .hero{padding-top:140px}
-  .hero-portrait{height:260px;margin-top:48px}
-  h1{font-size:17vw}
-  .role{letter-spacing:.13em}
-  .actions{gap:8px}
-  .btn{padding:12px 13px;font-size:10px}
-  .content-spotlight,.nav-spotlight{width:calc(100% - 24px);padding:28px 20px 24px}
-  .skill-panel{width:calc(100% - 24px);padding:24px 22px}
-  .project-card{padding:22px 18px}
-  .project-card h3{font-size:36px}
-  .project-card ul{padding-left:16px;font-size:11px}
-}
-@media(prefers-reduced-motion:reduce){
-  *,*:before,*:after{scroll-behavior:auto!important;animation-duration:.001ms!important;animation-iteration-count:1!important;transition-duration:.001ms!important}
->>>>>>> 11c854245bca88b0bc5f351038b4ad95dbdbccfb
 }
