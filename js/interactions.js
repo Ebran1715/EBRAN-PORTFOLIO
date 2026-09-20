@@ -1,133 +1,324 @@
-const skillData={
-  NETWORKING:["TCP/IP","OSI Model","IPv4 / IPv6","Subnetting","VLSM","Ethernet","MAC Addressing","ARP","TCP / UDP","ICMP","VLAN","Access Port","Trunking","802.1Q","Inter-VLAN Routing","STP / RSTP","EtherChannel / LACP","Static Routing","Default Routing","RIP","OSPF","EIGRP","Routing Tables","DHCP","DNS","NAT / PAT","ACL","SSH","SNMP","Syslog","NTP","Port Security","DHCP Snooping","Dynamic ARP Inspection","Cisco Packet Tracer","Network Troubleshooting","Ping / Traceroute","Routing & Switching","Network Monitoring","Incident Troubleshooting"],
-  MONITORING:["Zabbix Tool Creation","Zabbix Windows Server Monitoring","Zabbix Windows Workstation Monitoring","Checkmk","Motadata","24/7 Monitoring","Incident Management","SLA Compliance","Escalation"],
-  SYSTEMS:["Linux","Basic Administration","Logs","VMware","VM Monitoring","Snapshots","Windows Server","Windows Workstations"],
-  DEVELOPMENT:["HTML","CSS","JavaScript","Node.js","MySQL","Python Basics"]
-};
+export function initInteractions() {
+  // Page identifiers list
+  const pages = ["home", "experience", "monitoring", "skills", "projects", "education", "contact"];
+  let currentPageIndex = 0;
+  let isPagedMode = document.body.classList.contains("mode-paged");
+  let requestedPageId = null;
 
-export function initInteractions(ctx){
-  const skillPanel=document.querySelector("#skill-panel");
-  const experienceSpotlight=document.querySelector("#experience-spotlight");
-  const navSpotlight=document.querySelector("#nav-spotlight");
-  const closeSpotlight=(element)=>{
-    if(!element) return;
-    element.classList.remove("open");
-    element.setAttribute("aria-hidden","true");
-    clearTimeout(element.autoCloseTimer);
-  };
-  const scheduleAutoClose=(element)=>{
-    if(!element) return;
-    clearTimeout(element.autoCloseTimer);
-    element.autoCloseTimer=setTimeout(()=>closeSpotlight(element),2000);
-  };
-  const navContent={
-    home:{eyebrow:"EBRAN HUSAIN / NOC ENGINEER",title:"INFRASTRUCTURE\nIN MOTION.",text:"A cinematic portfolio exploring the systems, skills and experience behind reliable 24/7 operations.",tags:["NOC ENGINEER","24/7 OPERATIONS"]},
-    experience:{eyebrow:"PROFESSIONAL JOURNEY",title:"THE OPERATOR.",text:"NOC Technician at CAS Cloud Pvt. Ltd. Monitoring infrastructure, responding to incidents and supporting business-critical systems.",tags:["2022 — CURRENT","CAS CLOUD"]},
-    skills:{eyebrow:"SKILL NETWORK",title:"THE TOOLSET.",text:"Explore networking, monitoring, systems and development capabilities from the central skill network.",tags:["NETWORKING","MONITORING","SYSTEMS","DEVELOPMENT"]},
-    projects:{eyebrow:"BUILDING",title:"AFTER HOURS.",text:"Selected projects created with HTML, CSS, JavaScript, Node.js and MySQL, plus enterprise design, dynamic routing, security, services and wireless labs in Cisco Packet Tracer.",tags:["CISCO PACKET TRACER","WIRELESS","OSPF / EIGRP","NETWORK SECURITY"]},
-    education:{eyebrow:"FOUNDATION",title:"B.TECH.",text:"Computer Science Engineering foundation from Maharishi Markandeshwar (Deemed To Be University), completed in 2021.",tags:["COMPUTER SCIENCE","2021"]},
-    contact:{eyebrow:"CONNECTION",title:"LET'S CONNECT.",text:"For opportunities, collaboration or a conversation about technology and infrastructure.",tags:["EMAIL","PHONE","LINKEDIN","NEPAL"]}
-  };
-
-  function openNavSpotlight(id){
-    const content=navContent[id];
-    if(!content || !navSpotlight) return;
-    navSpotlight.querySelector(".eyebrow").textContent=content.eyebrow;
-    navSpotlight.querySelector("h2").innerHTML=content.title.replace("\n","<br>");
-    navSpotlight.querySelector("p").textContent=content.text;
-    navSpotlight.querySelector(".spotlight-tags").innerHTML=content.tags.map(tag=>`<span>${tag}</span>`).join("");
-    navSpotlight.classList.remove("open");
-    requestAnimationFrame(()=>navSpotlight.classList.add("open"));
-    navSpotlight.setAttribute("aria-hidden","false");
-    scheduleAutoClose(navSpotlight);
+  // Toast notification helper
+  const toastEl = document.querySelector("#toast");
+  let toastTimer = null;
+  function showToast(message) {
+    if (!toastEl) return;
+    toastEl.textContent = message;
+    toastEl.classList.add("show");
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => {
+      toastEl.classList.remove("show");
+    }, 2800);
   }
 
-  function openSkill(node){
-    document.querySelectorAll(".skill-node").forEach(n=>n.classList.remove("active"));
-    node.classList.add("active");
-    const key=node.dataset.skill;
-    skillPanel.innerHTML=`<span class="eyebrow">${key}</span><h3>${key}</h3><p>${skillData[key].join(" · ")}</p><button class="skill-panel-close" type="button" aria-label="Close skill spotlight">×</button>`;
-    skillPanel.classList.remove("open");
-    requestAnimationFrame(()=>skillPanel.classList.add("open"));
-    skillPanel.querySelector(".skill-panel-close").addEventListener("click",()=>closeSpotlight(skillPanel));
-    skillPanel.setAttribute("aria-hidden","false");
-    ctx?.setSection?.(3);
+  function updateNavigation(targetId) {
+    currentPageIndex = pages.indexOf(targetId);
+
+    document.querySelectorAll(".nav-link, .mobile-link").forEach((link) => {
+      const linkTarget = link.dataset.navTarget || link.getAttribute("href")?.replace("#", "");
+      link.classList.toggle("active", linkTarget === targetId);
+    });
+
+    document.querySelectorAll(".step-dots").forEach((dotsContainer) => {
+      dotsContainer.querySelectorAll(".dot").forEach((dot, dotIdx) => {
+        dot.classList.toggle("active", dotIdx === currentPageIndex);
+      });
+    });
   }
 
-  document.querySelectorAll(".skill-node").forEach(node=>{
-    node.addEventListener("mouseenter",()=>{
-      clearTimeout(skillPanel.autoCloseTimer);
-      openSkill(node);
-    });
-    node.addEventListener("mouseleave",()=>closeSpotlight(skillPanel));
-    node.addEventListener("click",()=>openSkill(node));
-  });
+  function observeScrollPages() {
+    if (typeof IntersectionObserver === "undefined") return;
 
-  const initialPanel=skillPanel;
-  initialPanel?.querySelector(".skill-panel-close")?.addEventListener("click",()=>closeSpotlight(initialPanel));
-  experienceSpotlight?.querySelector(".content-spotlight-close")?.addEventListener("click",()=>{
-    closeSpotlight(experienceSpotlight);
-  });
-  navSpotlight?.querySelector(".nav-spotlight-close")?.addEventListener("click",()=>{
-    closeSpotlight(navSpotlight);
-  });
+    const pageObserver = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add("scroll-visible");
+        }
+      });
 
-  document.querySelectorAll(".nav nav a").forEach(link=>{
-    link.addEventListener("click",()=>{
-      const id=link.getAttribute("href")?.slice(1);
-      setTimeout(()=>openNavSpotlight(id),650);
-    });
-  });
+      const viewportMiddle = window.innerHeight * 0.45;
+      const sections = [...document.querySelectorAll(".page-view")];
+      const visiblePage = sections.find((section) => {
+        const bounds = section.getBoundingClientRect();
+        return bounds.top <= viewportMiddle && bounds.bottom >= viewportMiddle;
+      }) || sections
+        .filter((section) => section.getBoundingClientRect().top <= viewportMiddle)
+        .sort((a, b) => b.getBoundingClientRect().top - a.getBoundingClientRect().top)[0];
 
-  const sound=document.querySelector("#sound-toggle");
-  let on=false;
-  let audioCtx = null;
-  let oscillator = null;
-  let gainNode = null;
+      if (requestedPageId && visiblePage?.id === requestedPageId) {
+        requestedPageId = null;
+      }
 
-  const ensureAudio = () => {
-    if (audioCtx) return;
-    const AudioCtor = window.AudioContext || window.webkitAudioContext;
-    if (!AudioCtor) return;
+      if (visiblePage && !requestedPageId && visiblePage.id !== pages[currentPageIndex]) {
+        updateNavigation(visiblePage.id);
+        try {
+          history.replaceState(null, "", `#${visiblePage.id}`);
+        } catch (e) {
+          // Ignore in restricted iframe contexts
+        }
+      }
+    }, { threshold: 0.18 });
 
-    audioCtx = new AudioCtor();
-    oscillator = audioCtx.createOscillator();
-    gainNode = audioCtx.createGain();
-    oscillator.type = "sine";
-    oscillator.frequency.value = 220;
-    gainNode.gain.value = 0.0001;
-    oscillator.connect(gainNode);
-    gainNode.connect(audioCtx.destination);
-    oscillator.start();
-  };
+    document.querySelectorAll(".page-view").forEach((section) => pageObserver.observe(section));
+  }
 
-  sound?.addEventListener("click", async () => {
-    ensureAudio();
-    if (!audioCtx || !gainNode || !oscillator) return;
-
-    on = !on;
-    sound.textContent = on ? "SOUND ON" : "SOUND OFF";
-    sound.setAttribute("aria-pressed", String(on));
-
-    const target = on ? 0.03 : 0.0001;
-    gainNode.gain.cancelScheduledValues(audioCtx.currentTime);
-    gainNode.gain.linearRampToValueAtTime(target, audioCtx.currentTime + 0.12);
-
-    if (on) {
-      oscillator.frequency.setTargetAtTime(220, audioCtx.currentTime, 0.1);
-    } else {
-      oscillator.frequency.setTargetAtTime(110, audioCtx.currentTime, 0.1);
-    }
-  });
-
-  // Small parallax on desktop.
-  addEventListener("pointermove",e=>{
-    if(innerWidth<900) return;
-    document.querySelectorAll(".section-copy").forEach((el,i)=>{
-      const r=el.getBoundingClientRect();
-      if(r.top<innerHeight && r.bottom>0){
-        el.style.transform=`translate3d(${(e.clientX/innerWidth-.5)*4}px,${(e.clientY/innerHeight-.5)*3}px,0)`;
+  // Copy to clipboard
+  document.querySelectorAll(".btn-copy-sm").forEach((btn) => {
+    btn.addEventListener("click", async (e) => {
+      e.stopPropagation();
+      const text = btn.dataset.copy;
+      if (!text) return;
+      try {
+        await navigator.clipboard.writeText(text);
+        showToast(`Copied: ${text}`);
+      } catch (err) {
+        const textarea = document.createElement("textarea");
+        textarea.value = text;
+        document.body.appendChild(textarea);
+        textarea.select();
+        document.execCommand("copy");
+        document.body.removeChild(textarea);
+        showToast(`Copied: ${text}`);
       }
     });
   });
+
+  const photoImage = document.querySelector(".photo-img");
+  const photoTrigger = document.querySelector(".photo-trigger");
+  const photoLightbox = document.querySelector("#photo-lightbox");
+  const photoLightboxImage = document.querySelector("#photo-lightbox-image");
+  const photoLightboxClose = document.querySelector("#photo-lightbox-close");
+
+  if (photoImage) {
+    const revealPhoto = () => photoImage.classList.add("is-loaded");
+    if (photoImage.complete) revealPhoto();
+    else photoImage.addEventListener("load", revealPhoto, { once: true });
+  }
+
+  function closePhotoLightbox() {
+    if (!photoLightbox) return;
+    photoLightbox.classList.remove("open");
+    photoLightbox.setAttribute("aria-hidden", "true");
+    document.body.classList.remove("lightbox-open");
+    window.setTimeout(() => {
+      photoLightbox.hidden = true;
+    }, 220);
+  }
+
+  function openPhotoLightbox() {
+    if (!photoTrigger || !photoLightbox || !photoLightboxImage) return;
+    photoLightboxImage.src = photoImage.src;
+    photoLightboxImage.alt = photoImage.alt;
+    photoLightbox.hidden = false;
+    photoLightbox.setAttribute("aria-hidden", "false");
+    document.body.classList.add("lightbox-open");
+    window.requestAnimationFrame(() => photoLightbox.classList.add("open"));
+  }
+
+  if (photoTrigger && photoLightbox && photoLightboxImage) {
+    photoTrigger.addEventListener("click", openPhotoLightbox);
+    photoLightbox.addEventListener("click", (event) => {
+      if (event.target === photoLightbox) closePhotoLightbox();
+    });
+    photoLightboxClose?.addEventListener("click", closePhotoLightbox);
+    window.addEventListener("keydown", (event) => {
+      if (event.key === "Escape" && !photoLightbox.hidden) closePhotoLightbox();
+    });
+  }
+
+  document.querySelectorAll(".hero-actions .btn-next-page").forEach((btn) => {
+    btn.addEventListener("click", () => goToPage(btn.dataset.nextTarget || "experience"));
+  });
+
+  // Dynamic Page Switcher Engine
+  function goToPage(target, smooth = true) {
+    let index = -1;
+    let targetId = "";
+
+    if (typeof target === "number") {
+      index = Math.max(0, Math.min(pages.length - 1, target));
+      targetId = pages[index];
+    } else if (typeof target === "string") {
+      const cleanId = target.replace(/^#/, "");
+      index = pages.indexOf(cleanId);
+      targetId = index !== -1 ? cleanId : pages[0];
+      if (index === -1) index = 0;
+    }
+
+    currentPageIndex = index;
+    requestedPageId = targetId;
+
+    if (isPagedMode) {
+      // Hide all pages, display active page with animation
+      document.querySelectorAll(".page-view").forEach((section) => {
+        section.classList.remove("active");
+      });
+
+      const activeSection = document.getElementById(targetId);
+      if (activeSection) {
+        activeSection.classList.add("active");
+      }
+
+      // Smooth scroll to top of view
+      window.scrollTo({
+        top: 0,
+        behavior: smooth ? "smooth" : "auto"
+      });
+    } else {
+      // Continuous scroll mode: scroll to section
+      const targetEl = document.getElementById(targetId);
+      if (targetEl) {
+        targetEl.scrollIntoView({ behavior: smooth ? "smooth" : "auto" });
+      }
+    }
+
+    updateNavigation(targetId);
+
+    // Update URL hash quietly
+    try {
+      history.replaceState(null, "", `#${targetId}`);
+    } catch (e) {
+      // Ignore in restricted iframe contexts
+    }
+  }
+
+  // Top nav and mobile menu links
+  document.querySelectorAll(".nav-link, .mobile-link, .brand").forEach((link) => {
+    link.addEventListener("click", (e) => {
+      const target = link.dataset.navTarget || link.getAttribute("href")?.replace("#", "");
+      if (target && pages.includes(target)) {
+        e.preventDefault();
+        goToPage(target);
+
+        // Close mobile drawer if open
+        const mobileMenu = document.querySelector("#mobile-menu");
+        const mobileToggle = document.querySelector("#mobile-toggle");
+        if (mobileMenu && mobileMenu.classList.contains("open")) {
+          mobileMenu.classList.remove("open");
+          mobileToggle?.setAttribute("aria-expanded", "false");
+          mobileMenu.setAttribute("aria-hidden", "true");
+        }
+      }
+    });
+  });
+
+  // Keyboard navigation: ArrowRight -> Next, ArrowLeft -> Prev
+  window.addEventListener("keydown", (e) => {
+    // Only navigate if user is not typing in a text field
+    const activeTag = document.activeElement ? document.activeElement.tagName.toLowerCase() : "";
+    if (activeTag === "input" || activeTag === "textarea") return;
+
+    if (e.key === "ArrowRight") {
+      if (currentPageIndex < pages.length - 1) {
+        goToPage(currentPageIndex + 1);
+      }
+    } else if (e.key === "ArrowLeft") {
+      if (currentPageIndex > 0) {
+        goToPage(currentPageIndex - 1);
+      }
+    }
+  });
+
+  // Mobile Menu Toggle
+  const mobileToggle = document.querySelector("#mobile-toggle");
+  const mobileMenu = document.querySelector("#mobile-menu");
+  if (mobileToggle && mobileMenu) {
+    mobileToggle.addEventListener("click", () => {
+      const isOpen = mobileMenu.classList.toggle("open");
+      mobileToggle.setAttribute("aria-expanded", String(isOpen));
+      mobileMenu.setAttribute("aria-hidden", String(!isOpen));
+    });
+  }
+
+  // Skills Tab Filtering & Live Search
+  const skillTabs = document.querySelectorAll(".skill-tab-btn");
+  const skillCards = document.querySelectorAll(".skill-card");
+  const skillSearch = document.querySelector("#skill-search");
+
+  function filterSkills() {
+    const activeTab = document.querySelector(".skill-tab-btn.active");
+    const category = activeTab ? activeTab.dataset.category : "all";
+    const query = skillSearch ? skillSearch.value.toLowerCase().trim() : "";
+
+    skillCards.forEach((card) => {
+      const domain = card.dataset.domain;
+      const pills = card.querySelectorAll(".pill");
+      let matchesCategory = category === "all" || domain === category;
+      let matchesSearch = false;
+
+      if (!query) {
+        matchesSearch = true;
+        pills.forEach((p) => (p.style.display = ""));
+      } else {
+        let matchingPillsCount = 0;
+        pills.forEach((pill) => {
+          const text = pill.textContent.toLowerCase();
+          if (text.includes(query)) {
+            pill.style.display = "";
+            matchingPillsCount++;
+          } else {
+            pill.style.display = "none";
+          }
+        });
+        const cardHeader = card.querySelector("h3").textContent.toLowerCase();
+        matchesSearch = matchingPillsCount > 0 || cardHeader.includes(query);
+      }
+
+      if (matchesCategory && matchesSearch) {
+        card.style.display = "";
+      } else {
+        card.style.display = "none";
+      }
+    });
+  }
+
+  skillTabs.forEach((tab) => {
+    tab.addEventListener("click", () => {
+      skillTabs.forEach((t) => t.classList.remove("active"));
+      tab.classList.add("active");
+      filterSkills();
+    });
+  });
+
+  if (skillSearch) {
+    skillSearch.addEventListener("input", filterSkills);
+  }
+
+  // Projects Category Filter
+  const projTabs = document.querySelectorAll(".proj-tab");
+  const projItems = document.querySelectorAll(".project-item");
+
+  projTabs.forEach((btn) => {
+    btn.addEventListener("click", () => {
+      projTabs.forEach((b) => b.classList.remove("active"));
+      btn.classList.add("active");
+      const filter = btn.dataset.filter;
+
+      projItems.forEach((item) => {
+        const cat = item.dataset.category;
+        if (filter === "all" || cat === filter) {
+          item.style.display = "";
+        } else {
+          item.style.display = "none";
+        }
+      });
+    });
+  });
+
+  // Check initial URL hash on page load
+  const initialHash = window.location.hash.replace("#", "");
+  if (initialHash && pages.includes(initialHash)) {
+    goToPage(initialHash, false);
+  } else {
+    goToPage(0, false);
+  }
+
+  observeScrollPages();
 }

@@ -1,255 +1,251 @@
 import * as THREE from "three";
-import { EffectComposer } from "three/addons/postprocessing/EffectComposer.js";
-import { RenderPass } from "three/addons/postprocessing/RenderPass.js";
-import { UnrealBloomPass } from "three/addons/postprocessing/UnrealBloomPass.js";
 
-export function initScene(){
+export function initScene() {
   const canvas = document.querySelector("#webgl");
   const fallback = document.querySelector("#webgl-fallback");
+  
   let renderer;
-  try{
-    renderer = new THREE.WebGLRenderer({canvas, antialias:true, alpha:true, powerPreference:"high-performance"});
-  }catch(e){
-    fallback.hidden = false;
-    canvas.style.display = "none";
-    return {scene:null,camera:null,renderer:null};
+  try {
+    renderer = new THREE.WebGLRenderer({
+      canvas,
+      antialias: true,
+      alpha: true,
+      powerPreference: "high-performance"
+    });
+  } catch (e) {
+    if (fallback) fallback.hidden = false;
+    if (canvas) canvas.style.display = "none";
+    return null;
   }
+
   const scene = new THREE.Scene();
-  scene.background = new THREE.Color(0x171716);
-  scene.fog = new THREE.FogExp2(0x171716, 0.035);
+  scene.background = new THREE.Color(0x04070e);
+  scene.fog = new THREE.FogExp2(0x04070e, 0.032);
 
-  const camera = new THREE.PerspectiveCamera(48, innerWidth/innerHeight, .1, 100);
-  camera.position.set(0,2.4,10);
+  const camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 100);
+  camera.position.set(0, 1.8, 9);
 
-  const hemi = new THREE.HemisphereLight(0xd6a15d,0x080807,.65);
-  scene.add(hemi);
-  const key = new THREE.PointLight(0xd6a15d,18,28);
-  key.position.set(3,5,4); scene.add(key);
-  const rim = new THREE.PointLight(0x7fa99b,9,25);
-  rim.position.set(-7,2,-5); scene.add(rim);
+  // Lighting setup for Data Center ambiance
+  const ambientLight = new THREE.AmbientLight(0x0a1428, 1.8);
+  scene.add(ambientLight);
+
+  const keyLight = new THREE.PointLight(0x00f0ff, 18, 30);
+  keyLight.position.set(3, 4, 3);
+  scene.add(keyLight);
+
+  const rimLight = new THREE.PointLight(0x10b981, 12, 25);
+  rimLight.position.set(-4, 2, -4);
+  scene.add(rimLight);
 
   const world = new THREE.Group();
   scene.add(world);
 
-  const floor = new THREE.Mesh(
-    new THREE.PlaneGeometry(50,50),
-    new THREE.MeshStandardMaterial({color:0x171716,metalness:.8,roughness:.72})
-  );
-  floor.rotation.x=-Math.PI/2; floor.position.y=-2; world.add(floor);
+  // Raised Data Center Floor Tiles
+  const floorGeo = new THREE.PlaneGeometry(60, 60, 30, 30);
+  const floorMat = new THREE.MeshStandardMaterial({
+    color: 0x050a14,
+    metalness: 0.85,
+    roughness: 0.45,
+    wireframe: false
+  });
+  const floor = new THREE.Mesh(floorGeo, floorMat);
+  floor.rotation.x = -Math.PI / 2;
+  floor.position.y = -1.2;
+  world.add(floor);
 
-  // NOC room: floor lanes, ceiling strips and server racks.
-  const rackMat = new THREE.MeshStandardMaterial({color:0x101820,metalness:.75,roughness:.35});
-  const darkMat = new THREE.MeshStandardMaterial({color:0x070b10,metalness:.5,roughness:.55});
-  for(let z=-18; z<10; z+=4){
-    for(let x=-9; x<=9; x+=6){
-      const rack = new THREE.Mesh(new THREE.BoxGeometry(2.2,6,1.1),rackMat);
-      rack.position.set(x,-2+3,z);
+  // Floor Grid Lines
+  const gridHelper = new THREE.GridHelper(60, 40, 0x0284c7, 0x0d203d);
+  gridHelper.position.y = -1.19;
+  world.add(gridHelper);
+
+  // Server Racks Corridor Construction
+  const rackMat = new THREE.MeshStandardMaterial({
+    color: 0x09101d,
+    metalness: 0.88,
+    roughness: 0.32
+  });
+  const serverMat = new THREE.MeshStandardMaterial({
+    color: 0x040810,
+    metalness: 0.95,
+    roughness: 0.2
+  });
+
+  const ledColors = [0x10b981, 0x00f0ff, 0xf59e0b, 0x10b981, 0x10b981];
+  const leds = [];
+
+  // Left and Right Server Aisle Rows
+  const rackAisles = [-5.2, 5.2];
+  for (const x of rackAisles) {
+    for (let z = -24; z <= 8; z += 3.8) {
+      // 42U Rack Enclosure
+      const rack = new THREE.Mesh(new THREE.BoxGeometry(1.6, 5.6, 2.2), rackMat);
+      rack.position.set(x, 1.6, z);
       world.add(rack);
-      for(let y=-4.3;y<=4.3;y+=.72){
-        const server = new THREE.Mesh(new THREE.BoxGeometry(1.8,.18,.98),darkMat);
-        server.position.set(x,y,z-.04);
-        world.add(server);
-        const led = new THREE.Mesh(new THREE.SphereGeometry(.035,8,8),new THREE.MeshBasicMaterial({color:Math.random()>.15?0xd6a15d:0xd86f62}));
-        led.position.set(x+.72,y+.12,z-.57);
-        world.add(led);
+
+      // Rack Frame Rails
+      const railMat = new THREE.LineBasicMaterial({ color: 0x00f0ff, transparent: true, opacity: 0.25 });
+      const rackEdges = new THREE.LineSegments(new THREE.EdgesGeometry(new THREE.BoxGeometry(1.6, 5.6, 2.2)), railMat);
+      rackEdges.position.copy(rack.position);
+      world.add(rackEdges);
+
+      // Server Units (1U / 2U blades)
+      for (let y = -0.8; y <= 4.0; y += 0.52) {
+        const blade = new THREE.Mesh(new THREE.BoxGeometry(1.4, 0.16, 2.05), serverMat);
+        blade.position.set(x, y, z);
+        world.add(blade);
+
+        // Blinking Status LEDs on server front panel
+        const facingZ = (x < 0) ? 0.95 : -0.95;
+        const color = ledColors[Math.floor(Math.random() * ledColors.length)];
+        const ledGeo = new THREE.SphereGeometry(0.028, 6, 6);
+        const ledMat = new THREE.MeshBasicMaterial({ color });
+        const ledMesh = new THREE.Mesh(ledGeo, ledMat);
+        ledMesh.position.set(x + (x < 0 ? 0.72 : -0.72), y + 0.04, z + (Math.random() - 0.5) * 1.6);
+        world.add(ledMesh);
+
+        leds.push({
+          mesh: ledMesh,
+          baseColor: color,
+          frequency: 1 + Math.random() * 4,
+          phase: Math.random() * Math.PI * 2
+        });
       }
     }
   }
 
-  // Cinematic reference panels for server rooms, hardware and network infrastructure.
-  const imageGroup = new THREE.Group();
-  world.add(imageGroup);
-  const imageLoader = new THREE.TextureLoader();
-  const imagePanels = [
-    {url:"https://images.unsplash.com/photo-1558494949-ef010cbdcc31?auto=format&fit=crop&w=1000&q=75",position:[-6,2.5,-7],rotation:[0,.22,.02],scale:1},
-    {url:"https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&w=1000&q=75",position:[6,1.2,-13],rotation:[0,-.2,-.02],scale:.82},
-    {url:"https://images.unsplash.com/photo-1551808525-51a94da548ce?auto=format&fit=crop&w=1000&q=75",position:[-1,4.8,-19],rotation:[-.08,.05,0],scale:.72},
-    {url:"https://images.unsplash.com/photo-1581092160562-40aa08e78837?auto=format&fit=crop&w=1000&q=75",position:[5,3.8,-8.5],rotation:[0,-.16,-.025],scale:.86}
-  ];
-  imageLoader.load(imagePanels[0].url,texture=>{
-    texture.colorSpace=THREE.SRGBColorSpace;
-    const backdrop = new THREE.Mesh(
-      new THREE.PlaneGeometry(34,20),
-      new THREE.MeshBasicMaterial({map:texture,color:0x8d7355,transparent:true,opacity:.14,depthWrite:false,fog:true})
-    );
-    backdrop.position.set(0,5,-25);
-    imageGroup.add(backdrop);
-  });
-  imagePanels.forEach((panel,index)=>{
-    panel.phase=index*1.8;
-    const frame = new THREE.Mesh(
-      new THREE.BoxGeometry(4.7*panel.scale,3.05*panel.scale,.12),
-      new THREE.MeshStandardMaterial({color:0x2a241d,metalness:.85,roughness:.28,transparent:true,opacity:.78})
-    );
-    frame.position.set(...panel.position);
-    frame.rotation.set(...panel.rotation);
-    frame.userData={baseY:panel.position[1],baseRotationZ:panel.rotation[2],phase:panel.phase};
-    imageGroup.add(frame);
-    imageLoader.load(panel.url,texture=>{
-      texture.colorSpace=THREE.SRGBColorSpace;
-      const image = new THREE.Mesh(
-        new THREE.PlaneGeometry(4.35*panel.scale,2.7*panel.scale),
-        new THREE.MeshBasicMaterial({map:texture,color:0xffffff,transparent:true,opacity:.38,fog:true})
-      );
-      image.position.set(panel.position[0],panel.position[1],panel.position[2]-.08);
-      image.rotation.set(...panel.rotation);
-      image.userData={baseY:panel.position[1],baseRotationZ:panel.rotation[2],phase:panel.phase};
-      imageGroup.add(image);
-    });
-  });
-
-  // Floating network nodes.
-  const nodeGroup = new THREE.Group(); world.add(nodeGroup);
-  for(let i=0;i<38;i++){
-    const node = new THREE.Mesh(new THREE.SphereGeometry(.055,8,8),new THREE.MeshBasicMaterial({color:0xd6a15d}));
-    node.position.set((Math.random()-.5)*22,Math.random()*9-1,(Math.random()-.5)*24-4);
-    nodeGroup.add(node);
+  // Overhead Fiber Optic Cable Trays & Traces
+  const trayMat = new THREE.LineBasicMaterial({ color: 0x00f0ff, transparent: true, opacity: 0.3 });
+  for (let x of [-3.8, 0, 3.8]) {
+    const p1 = new THREE.Vector3(x, 4.2, -26);
+    const p2 = new THREE.Vector3(x, 4.2, 10);
+    const trayGeo = new THREE.BufferGeometry().setFromPoints([p1, p2]);
+    world.add(new THREE.Line(trayGeo, trayMat));
   }
 
-  // Particle field.
-  const count = matchMedia("(max-width:700px)").matches ? 700 : 1500;
-  const pos = new Float32Array(count*3);
-  for(let i=0;i<count;i++){
-    pos[i*3]=(Math.random()-.5)*34;
-    pos[i*3+1]=Math.random()*18-5;
-    pos[i*3+2]=(Math.random()-.5)*34-8;
+  // Floating Network Topology Constellation
+  const topologyGroup = new THREE.Group();
+  world.add(topologyGroup);
+
+  const nodeCount = 28;
+  const nodeGeo = new THREE.SphereGeometry(0.06, 8, 8);
+  const nodeMat = new THREE.MeshBasicMaterial({ color: 0x00f0ff });
+  const topologyNodes = [];
+
+  for (let i = 0; i < nodeCount; i++) {
+    const node = new THREE.Mesh(nodeGeo, nodeMat);
+    node.position.set(
+      (Math.random() - 0.5) * 12,
+      1 + Math.random() * 3.5,
+      (Math.random() - 0.5) * 26 - 2
+    );
+    topologyGroup.add(node);
+    topologyNodes.push(node);
   }
-  const pgeo = new THREE.BufferGeometry();
-  pgeo.setAttribute("position",new THREE.BufferAttribute(pos,3));
-  const particles = new THREE.Points(pgeo,new THREE.PointsMaterial({color:0xd6a15d,size:.025,transparent:true,opacity:.55}));
+
+  // Interconnected Network Mesh Traces
+  const lineMat = new THREE.LineBasicMaterial({
+    color: 0x38bdf8,
+    transparent: true,
+    opacity: 0.15
+  });
+
+  for (let i = 0; i < topologyNodes.length; i++) {
+    for (let j = i + 1; j < topologyNodes.length; j++) {
+      const dist = topologyNodes[i].position.distanceTo(topologyNodes[j].position);
+      if (dist < 4.2) {
+        const linkGeo = new THREE.BufferGeometry().setFromPoints([
+          topologyNodes[i].position,
+          topologyNodes[j].position
+        ]);
+        topologyGroup.add(new THREE.Line(linkGeo, lineMat));
+      }
+    }
+  }
+
+  // Data Center Atmosphere Particle Field
+  const particleCount = window.innerWidth < 768 ? 400 : 900;
+  const pPos = new Float32Array(particleCount * 3);
+  for (let i = 0; i < particleCount; i++) {
+    pPos[i * 3] = (Math.random() - 0.5) * 22;
+    pPos[i * 3 + 1] = Math.random() * 8 - 0.5;
+    pPos[i * 3 + 2] = (Math.random() - 0.5) * 32 - 4;
+  }
+  const pGeo = new THREE.BufferGeometry();
+  pGeo.setAttribute("position", new THREE.BufferAttribute(pPos, 3));
+  const pMat = new THREE.PointsMaterial({
+    color: 0x00f0ff,
+    size: 0.022,
+    transparent: true,
+    opacity: 0.45
+  });
+  const particles = new THREE.Points(pGeo, pMat);
   world.add(particles);
 
-  const visualGroup = new THREE.Group();
-  world.add(visualGroup);
-  const visualSets = [];
-  const visualColors = [0xd6a15d,0x7fa99b,0xc98b57,0xd86f62,0xb9a58b,0xf4efe6,0xd6a15d];
-  const visualDepths = [4.5,1.2,-2,-5.3,-8.5,-11.8,-15.2];
-
-  visualDepths.forEach((z,index)=>{
-    const group = new THREE.Group();
-    const color = visualColors[index];
-    const material = new THREE.MeshStandardMaterial({color,emissive:color,emissiveIntensity:.45,metalness:.5,roughness:.3,transparent:true,opacity:0});
-    const frameMaterial = new THREE.MeshStandardMaterial({color:0x101820,metalness:.8,roughness:.25,transparent:true,opacity:0});
-    const boxBodyMaterial = new THREE.MeshStandardMaterial({color:0x0b1320,emissive:color,emissiveIntensity:.2,metalness:.65,roughness:.28,transparent:true,opacity:0});
-    const boxMaterial = new THREE.LineBasicMaterial({color,transparent:true,opacity:0});
-    const boxBody = new THREE.Mesh(new THREE.BoxGeometry(2.2,1.55,.65),boxBodyMaterial);
-    const box = new THREE.LineSegments(new THREE.EdgesGeometry(new THREE.BoxGeometry(2.2,1.55,.65)),boxMaterial);
-    group.add(boxBody);
-    group.add(box);
-
-    if(index === 0){
-      group.add(new THREE.Mesh(new THREE.BoxGeometry(4.8,2.7,.16),frameMaterial));
-      const bars = new THREE.Group();
-      for(let i=0;i<8;i++){
-        const bar = new THREE.Mesh(new THREE.BoxGeometry(.24,.35+(i%4)*.3,.08),material);
-        bar.position.set(-1.65+i*.47,-.45,.14); bars.add(bar);
-      }
-      group.add(bars);
-    }else if(index === 1){
-      for(let i=0;i<3;i++){
-        const pillar = new THREE.Mesh(new THREE.BoxGeometry(.22,3.7,.22),material);
-        pillar.position.set((i-1)*1.2,0,0); group.add(pillar);
-      }
-      group.add(new THREE.Mesh(new THREE.TorusGeometry(1.5,.035,8,64),material));
-    }else if(index === 2){
-      for(let i=0;i<10;i++){
-        const node = new THREE.Mesh(new THREE.SphereGeometry(.13,12,12),material);
-        const angle = i/10*Math.PI*2;
-        node.position.set(Math.cos(angle)*1.8,Math.sin(angle)*1.8,0); group.add(node);
-      }
-      group.add(new THREE.Mesh(new THREE.IcosahedronGeometry(.65,1),material));
-    }else if(index === 3){
-      for(let i=0;i<4;i++){
-        const cube = new THREE.Mesh(new THREE.BoxGeometry(.75,.75,.75),material);
-        cube.position.set((i-1.5)*.95,Math.sin(i)*.45,0); cube.rotation.set(i*.3,i*.45,0); group.add(cube);
-      }
-    }else if(index === 4){
-      group.add(new THREE.Mesh(new THREE.CylinderGeometry(1.35,1.35,.16,48),frameMaterial));
-      const cap = new THREE.Mesh(new THREE.CylinderGeometry(.9,.9,.28,48),material);
-      cap.position.y=.22; group.add(cap);
-      group.add(new THREE.Mesh(new THREE.TorusGeometry(1.35,.035,8,48),material));
-    }else if(index === 5){
-      const ring = new THREE.Mesh(new THREE.TorusGeometry(1.6,.05,8,64),material);
-      ring.rotation.x=Math.PI/2; group.add(ring);
-      group.add(new THREE.Mesh(new THREE.SphereGeometry(.55,24,24),material));
-    }else{
-      const ring = new THREE.Mesh(new THREE.TorusGeometry(1.25,.06,8,64),material);
-      ring.rotation.x=Math.PI/2; group.add(ring);
-      const point = new THREE.Mesh(new THREE.SphereGeometry(.2,16,16),material);
-      point.position.set(1.25,0,0); group.add(point);
-    }
-
-    group.position.set(2.6,index%2 ? 1.1 : .5,z);
-    group.rotation.set(0,index*.22,0);
-    const motionChildren=group.children.filter(child=>child !== box && child !== boxBody).map(child=>{
-      const finalPosition=child.position.clone();
-      child.position.set(0,0,0);
-      return {child,finalPosition};
-    });
-    visualGroup.add(group);
-    visualSets.push({group,material,frameMaterial,boxBodyMaterial,boxMaterial,motionChildren,baseY:group.position.y,baseRotationY:index*.22,motionStart:0});
-  });
-
-  function setSection(index){
-    visualSets.forEach((set,setIndex)=>{
-      const active = setIndex === index;
-      set.material.opacity = active ? 1 : .08;
-      set.frameMaterial.opacity = active ? .92 : .04;
-      set.boxBodyMaterial.opacity = active ? .28 : .04;
-      set.boxMaterial.opacity = active ? .9 : .08;
-      if(active){
-        set.motionStart = performance.now();
-        set.group.scale.setScalar(.72);
-        set.group.rotation.y = set.baseRotationY + Math.PI * 2.4;
-        set.motionChildren.forEach(item=>item.child.position.set(0,0,0));
-      }else{
-        set.motionStart = 0;
-        set.group.scale.setScalar(1);
-        set.group.rotation.y = set.baseRotationY;
-      }
-    });
-  }
-  setSection(0);
-
-  const composer = new EffectComposer(renderer);
-  composer.addPass(new RenderPass(scene,camera));
-  const bloom = new UnrealBloomPass(new THREE.Vector2(innerWidth,innerHeight),.55,.75,.88);
-  composer.addPass(bloom);
-
-  function resize(){
-    const dpr=Math.min(devicePixelRatio,1.6);
+  // Resize Handler
+  function resize() {
+    const dpr = Math.min(window.devicePixelRatio || 1, 1.5);
     renderer.setPixelRatio(dpr);
-    renderer.setSize(innerWidth,innerHeight,false);
-    composer.setSize(innerWidth,innerHeight);
-    camera.aspect=innerWidth/innerHeight;
+    renderer.setSize(window.innerWidth, window.innerHeight, false);
+    camera.aspect = window.innerWidth / window.innerHeight;
     camera.updateProjectionMatrix();
   }
-  addEventListener("resize",resize); resize();
+  window.addEventListener("resize", resize);
+  resize();
 
-  const clock=new THREE.Clock();
-  function tick(){
-    const t=clock.getElapsedTime();
-    particles.rotation.y=t*.006;
-    imageGroup.children.forEach((panel,index)=>{
-      panel.position.y=panel.userData.baseY+Math.sin(t*.18+panel.userData.phase)*.12;
-      panel.rotation.z=panel.userData.baseRotationZ+Math.sin(t*.12+panel.userData.phase)*.012;
-    });
-    nodeGroup.children.forEach((n,i)=>{n.position.y += Math.sin(t*.6+i)*.0006});
-    visualSets.forEach((set,i)=>{
-      if(!set.motionStart) return;
-      const progress=Math.min(1,(performance.now()-set.motionStart)/2200);
-      const eased=1-Math.pow(1-progress,3);
-      set.group.rotation.y=set.baseRotationY + Math.PI*2.4*(1-eased);
-      set.group.scale.setScalar(.72+.28*eased);
-      set.motionChildren.forEach(item=>item.child.position.lerpVectors(new THREE.Vector3(0,0,0),item.finalPosition,eased));
-      if(progress >= 1) set.motionStart=0;
-    });
-    key.position.x=3+Math.sin(t*.35)*2;
-    rim.position.x=-7+Math.cos(t*.25)*2;
-    composer.render();
-    requestAnimationFrame(tick);
+  // Mouse Parallax & Scroll Integration
+  const mouse = { x: 0, y: 0 };
+  const targetCam = { x: 0, y: 1.8, z: 9, rx: 0 };
+
+  window.addEventListener("pointermove", (e) => {
+    mouse.x = (e.clientX / window.innerWidth - 0.5) * 0.8;
+    mouse.y = (e.clientY / window.innerHeight - 0.5) * 0.5;
+  });
+
+  function updateScrollCamera() {
+    const scrollMax = Math.max(1, document.documentElement.scrollHeight - window.innerHeight);
+    const progress = Math.min(1, Math.max(0, window.scrollY / scrollMax));
+    
+    // Smooth camera progression down the data center aisle as user scrolls
+    targetCam.z = 9 - progress * 24;
+    targetCam.y = 1.8 + Math.sin(progress * Math.PI) * 0.4;
+    targetCam.x = Math.sin(progress * Math.PI * 1.5) * 0.8;
   }
-  tick();
+  window.addEventListener("scroll", updateScrollCamera, { passive: true });
+  updateScrollCamera();
 
-  return {THREE,scene,camera,renderer,composer,world,key,rim,setSection};
+  // Animation Loop
+  const clock = new THREE.Clock();
+  function animate() {
+    const t = clock.getElapsedTime();
+
+    // Blink server LEDs
+    for (let i = 0; i < leds.length; i++) {
+      const led = leds[i];
+      const intensity = Math.sin(t * led.frequency + led.phase);
+      led.mesh.visible = intensity > -0.2;
+    }
+
+    // Gently float network topology nodes
+    for (let i = 0; i < topologyNodes.length; i++) {
+      topologyNodes[i].position.y += Math.sin(t * 1.2 + i) * 0.001;
+    }
+
+    // Subtle drift on particles
+    particles.rotation.y = t * 0.015;
+
+    // Smooth camera lerp
+    camera.position.x += (targetCam.x + mouse.x - camera.position.x) * 0.045;
+    camera.position.y += (targetCam.y - mouse.y - camera.position.y) * 0.045;
+    camera.position.z += (targetCam.z - camera.position.z) * 0.045;
+
+    // Dynamic light pulsing
+    keyLight.intensity = 16 + Math.sin(t * 1.8) * 3;
+    rimLight.intensity = 10 + Math.cos(t * 1.5) * 2;
+
+    renderer.render(scene, camera);
+    requestAnimationFrame(animate);
+  }
+  animate();
+
+  return { scene, camera, renderer, world };
 }
